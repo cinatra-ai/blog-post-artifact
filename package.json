@@ -1,0 +1,28 @@
+{
+  "name": "@cinatra-ai/blog-post-artifact",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "cinatra": {
+    "apiVersion": "cinatra.ai/v1",
+    "kind": "artifact",
+    "dependencies": [],
+    "artifact": {
+      "accepts": {
+        "file": {
+          "mimeTypes": [
+            "text/markdown"
+          ]
+        }
+      },
+      "skills": {
+        "matchers": [
+          "@cinatra-ai/blog-post-artifact:blog-post-matcher"
+        ]
+      },
+      "matcherConfidenceThreshold": 0.7
+    }
+  }
+}

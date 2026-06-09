@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build output (tsconfig outDir)
+dist/
+*.tsbuildinfo
+
+# Extracted extension repos ship no committed lockfile (see ci.yml); a local
+# `pnpm install` must not introduce one.
+pnpm-lock.yaml
+
+# npm pack output
+*.tgz
+
+# Logs
+*.log
+
+# Env files
+.env
+.env.*
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store

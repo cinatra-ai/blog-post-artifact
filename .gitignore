@@ -23,3 +23,6 @@ pnpm-lock.yaml
 .vscode/
 .idea/
 .DS_Store
+
+# Internal planning notes (local only)
+.planning/

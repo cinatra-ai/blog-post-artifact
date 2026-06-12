@@ -20,6 +20,9 @@
   "cinatra": {
     "apiVersion": "cinatra.ai/v1",
     "kind": "artifact",
+    "roles": [
+      "artifact-blog-post-body"
+    ],
     "dependencies": [],
     "artifact": {
       "accepts": {

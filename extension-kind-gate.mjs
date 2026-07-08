@@ -1070,7 +1070,7 @@ export function validateConnector(packageRoot) {
 // artifact gate — mirror of packages/extensions/src/artifact-handler.validate.
 // ===========================================================================
 export const ARTIFACT_NAME_RE = /^@cinatra-ai\/[a-z0-9][a-z0-9-]*-artifact$/;
-export const ARTIFACT_ALLOWED_CINATRA_KEYS = new Set(["kind", "apiVersion", "artifact", "dependencies", "roles"]);
+export const ARTIFACT_ALLOWED_CINATRA_KEYS = new Set(["kind", "apiVersion", "artifact", "dependencies", "roles", "displayName"]);
 
 const SKILL_REF_IS_INVALID = (s) => /\.md$/i.test(s) || /^\.{0,2}\//.test(s) || s.startsWith("/");
 const ARTIFACT_FORMS = new Set(["file", "connectorRef", "dashboard"]);
@@ -1171,7 +1171,7 @@ export function validateArtifactPackageShape(pkg) {
   }
   for (const k of Object.keys(cinatra)) {
     if (!ARTIFACT_ALLOWED_CINATRA_KEYS.has(k)) {
-      errors.push(`artifact extensions may only declare cinatra.{kind,apiVersion,artifact,dependencies,roles}; unexpected key "${k}"`);
+      errors.push(`artifact extensions may only declare cinatra.{kind,apiVersion,artifact,dependencies,roles,displayName}; unexpected key "${k}"`);
     }
   }
   return errors;
@@ -1245,7 +1245,7 @@ export function validateWorkflowPackageShape(pkg) {
     errors.push(`cinatra.workflowVersion must be a positive integer (got ${JSON.stringify(cinatra.workflowVersion)})`);
   }
   // `roles` is cross-kind (cinatra#151 Stage 5) — a workflow package may carry it.
-  const allowed = new Set(["kind", "apiVersion", "workflowVersion", "dependencies", "roles"]);
+  const allowed = new Set(["kind", "apiVersion", "workflowVersion", "dependencies", "roles", "displayName"]);
   for (const k of Object.keys(cinatra)) {
     if (!allowed.has(k)) errors.push(`unexpected cinatra key "${k}"`);
   }

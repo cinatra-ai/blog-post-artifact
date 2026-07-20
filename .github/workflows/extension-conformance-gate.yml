@@ -46,7 +46,7 @@ permissions:
 
 jobs:
   extension-conformance-gate:
-    uses: cinatra-ai/cinatra/.github/workflows/extension-conformance-gate-reusable.yml@8ccb895adcc56d130040d847ed75b2d3fedd4da3 # v0.1.0
+    uses: cinatra-ai/cinatra/.github/workflows/extension-conformance-gate-reusable.yml@49669e31f9183bc1627a0e85b7a3938f41eab814 # v0.1.0
     with:
       ref: 8ccb895adcc56d130040d847ed75b2d3fedd4da3
       enforce: false

@@ -24,7 +24,7 @@
   "devDependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "vitest": "^3.0.0"
+    "vitest": "^4.0.0"
   },
   "cinatra": {
     "apiVersion": "cinatra.ai/v1",

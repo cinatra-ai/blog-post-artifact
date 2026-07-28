@@ -16,7 +16,35 @@ export const blogPostArtifactManifest: SemanticArtifactManifest = {
     },
   },
   skills: {
-    matchers: ["@cinatra-ai/blog-post-artifact:blog-post-matcher"],
+    matchers: ["@cinatra-ai/blog-post-matcher-skill:blog-post-matcher"],
   },
   matcherConfidenceThreshold: 0.7,
+  objectTypes: [
+    {
+      type: "@cinatra-ai/blog-post-artifact:post",
+      claim: "dedicated",
+      dispositions: {
+        projection: "artifact-safe",
+        pinnable: true,
+        snapshotPolicy: "content",
+        sensitivity: "normal",
+        mutability: "draftable",
+      },
+      schema: {
+        type: "object",
+        properties: {
+          title: {
+            type: "string",
+          },
+          bodyMarkdown: {
+            type: "string",
+          },
+          createdByRunId: {
+            type: "string",
+          },
+        },
+        additionalProperties: true,
+      },
+    },
+  ],
 };

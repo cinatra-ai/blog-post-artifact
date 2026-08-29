@@ -3,17 +3,26 @@
   "version": "0.1.4",
   "license": "Apache-2.0",
   "type": "module",
+  "packageManager": "pnpm@9.15.9",
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "files": [
     "src"
   ],
   "main": "./src/index.ts",
   "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./src/renderers/detail": "./src/renderers/detail.tsx",
+    "./src/renderers/preview": "./src/renderers/preview.tsx",
+    "./src/suggestion-projector": "./src/suggestion-projector.ts"
+  },
   "peerDependencies": {
     "@cinatra-ai/sdk-extensions": "*",
-    "react": "^19.0.0"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "peerDependenciesMeta": {
     "@cinatra-ai/sdk-extensions": {
@@ -21,8 +30,15 @@
     }
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.1.0",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "jsdom": "^26.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "typescript": "^5.6.3",
     "vitest": "^4.0.0"
   },
   "cinatra": {
@@ -51,6 +67,26 @@
           "mimeTypes": [
             "text/markdown"
           ]
+        }
+      },
+      "ui": {
+        "abiVersion": 1,
+        "sdkAbiRange": "^2.5.0",
+        "renderers": {
+          "detail": {
+            "entry": "./src/renderers/detail.tsx",
+            "propsApiVersion": 1,
+            "representations": [
+              "text/markdown"
+            ]
+          },
+          "preview": {
+            "entry": "./src/renderers/preview.tsx",
+            "propsApiVersion": 1,
+            "representations": [
+              "text/markdown"
+            ]
+          }
         }
       },
       "skills": {

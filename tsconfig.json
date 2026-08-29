@@ -1,5 +1,6 @@
 {
-  "//": "Standalone strict TypeScript config for an extracted Cinatra extension repo. Extends nothing — the package no longer lives in the monorepo and must compile on its own. Targets the package's own src/.",
+  "//": "Standalone strict TypeScript config for this extracted Cinatra extension repo. Extends nothing — the package compiles on its own, and its own CI typechecks it. No dist emit: the display entry is consumed as SOURCE by the host bundler, and `main`/`types` already point at source.",
+  "//host-provided": "The SDK is HOST-PROVIDED: the host resolves it when it builds this package, and a standalone extension repository cannot resolve it at all. Each path below therefore resolves its specifier to the real SDK source when one is installed at that path, and to a signature-only declaration in ./types otherwise. An installed SDK wins where it still publishes that source path; if it moved the file, this repository would typecheck against the local shape instead, so the AUTHORITATIVE typecheck against the real SDK is the one that runs where the SDK lives.",
   "compilerOptions": {
     "target": "ES2023",
     "module": "ESNext",
@@ -13,14 +14,20 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "outDir": "dist",
-    "rootDir": "src",
-    "noEmit": false,
-    "verbatimModuleSyntax": true
+    "noEmit": true,
+    "verbatimModuleSyntax": true,
+    "baseUrl": ".",
+    "paths": {
+      "@cinatra-ai/sdk-extensions/markdown-sanitizer": [
+        "./node_modules/@cinatra-ai/sdk-extensions/src/markdown-sanitizer.ts",
+        "./types/sdk-markdown-sanitizer.d.ts"
+      ],
+      "@cinatra-ai/sdk-extensions": [
+        "./node_modules/@cinatra-ai/sdk-extensions/src/index.ts",
+        "./types/sdk-extensions-artifact-contract.d.ts"
+      ]
+    }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "tests/**/*.ts", "tests/**/*.tsx", "types/**/*.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

@@ -1,13 +1,14 @@
-// ACCEPTANCE 1 — this extension's display draws a blog post ON THE PAGE,
-// ON THE REVIEW CARD AND INSIDE A THIRD-PARTY APPLICATION, at the pinned
-// revision.
+// ACCEPTANCE 1 — this extension's OWN display draws a blog post ON THE REVIEW
+// CARD AND INSIDE A THIRD-PARTY APPLICATION, at the pinned revision.
 //
-// Three surfaces, three mounts, one display: the artifact page mounts the
-// `detail` entry, the review card mounts the `preview` entry READ-ONLY, and
-// inside a third-party application the same entry is mounted on a snapshot
-// whose host-authorized addresses are island-scoped. Every mount asserts the
-// PINNED revision it drew, because a display that drew the right words at the
-// wrong revision is a display that lied about what is under review.
+// The artifact page is NOT one of these surfaces: this package registers no
+// renderer for the `detail` slot, so the post's full view is the markdown
+// display the host resolves for its type. Two surfaces, two mounts, one
+// display: the review card mounts the `preview` entry READ-ONLY, and inside a
+// third-party application the same entry is mounted on a snapshot whose
+// host-authorized addresses are island-scoped. Every mount asserts the PINNED
+// revision it drew, because a display that drew the right words at the wrong
+// revision is a display that lied about what is under review.
 //
 // What the sanitizer admits and strips is pinned against the REAL leaf where
 // the SDK lives; here the recording double proves this package's own half —
@@ -18,7 +19,6 @@ import type { ReactElement } from "react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { cleanup, render } from "@testing-library/react";
 
-import Detail from "../src/renderers/detail";
 import Preview from "../src/renderers/preview";
 import { TEXT_DISPLAY_PROPS_API_VERSION } from "../src/renderers/text-view";
 import type { ArtifactRendererProps } from "../src/artifact-renderer-props";
@@ -35,7 +35,8 @@ const RENDERER = "blog-post";
 
 type Entry = (p: ArtifactRendererProps) => ReactElement;
 
-/** The three surfaces, named as the acceptance names them. */
+/** The surfaces this package's own display draws on, named as the acceptance
+ * names them. */
 const SURFACES: Array<{
   name: string;
   slot: "detail" | "preview";
@@ -43,13 +44,6 @@ const SURFACES: Array<{
   build: (content: ReturnType<typeof textContent>) => ArtifactRendererProps;
   compact: boolean;
 }> = [
-  {
-    name: "the artifact page",
-    slot: "detail",
-    Entry: Detail as Entry,
-    build: (c) => props(c),
-    compact: false,
-  },
   {
     name: "the review card",
     slot: "preview",
@@ -184,13 +178,13 @@ describe.skipIf(REAL_SANITIZER)("the display draws on every surface, at the pinn
 
   it("refuses a snapshot built at a props version it did not agree to read", () => {
     const { container } = render(
-      <Detail {...props(textContent(BODY), { propsApiVersion: TEXT_DISPLAY_PROPS_API_VERSION + 1 })} />,
+      <Preview {...props(textContent(BODY), { propsApiVersion: TEXT_DISPLAY_PROPS_API_VERSION + 1 })} />,
     );
     expect(container.querySelector("[data-floor='props-version']")).not.toBeNull();
   });
 
   it("refuses to draw one revision's words under another revision's name", () => {
-    const { container } = render(<Detail {...props(textContent(BODY, { representationRevisionId: "rev_9" }))} />);
+    const { container } = render(<Preview {...props(textContent(BODY, { representationRevisionId: "rev_9" }))} />);
     expect(container.querySelector("[data-floor='content-revision-mismatch']")).not.toBeNull();
   });
 
@@ -224,7 +218,7 @@ describe.skipIf(REAL_SANITIZER)("the display draws on every surface, at the pinn
       ],
     ];
     for (const [p, reason] of cases) {
-      const { container, unmount } = render(<Detail {...p} />);
+      const { container, unmount } = render(<Preview {...p} />);
       const floor = container.querySelector(`[data-floor='${reason}']`);
       expect(floor, reason).not.toBeNull();
       expect((floor?.textContent ?? "").trim().length, reason).toBeGreaterThan(0);

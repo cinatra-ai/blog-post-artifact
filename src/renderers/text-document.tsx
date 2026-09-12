@@ -1,8 +1,8 @@
-// The drawn text, and the floor beside it — the chrome both slots share, so the
-// full view and the compact one can never disagree about what a
-// blog post looks like or about what they say when there is none. It is the same
-// chrome pattern the fleet's markdown base draws, so one artifact does not read
-// as a different product from the next.
+// The drawn text, and the floor beside it — the chrome this package's own
+// display wears, so a blog post shown beside other work reads the same wherever
+// it is shown, and says the same thing when there is no content to show. It is
+// the same chrome pattern the fleet's markdown base draws, so one artifact does
+// not read as a different product from the next.
 //
 // THE ONE INJECTION POINT. The html handed to the container below comes from the
 // SDK's shared markdown sanitizer and from nowhere else: the sanitizer is the
@@ -11,11 +11,12 @@
 // package would be a second, unreviewed road for stored content into the page,
 // and the package's own test refuses one.
 //
-// READ-ONLY, ON EVERY SURFACE. Both slots draw and nothing else: no tabs, no
-// editing affordance, no save, and no Regenerate — Regenerate is the review
-// screen's control, never a renderer's. The Code and Preview tabs belong to the
-// artifact page's markdown editor, which is its own item and its own wave; a
-// review card mounts this display exactly as it is.
+// READ-ONLY, AND NOT THE POST'S FULL VIEW. This display draws and nothing else:
+// no editing affordance, no save, and no Regenerate — Regenerate is the review
+// screen's control, never a renderer's. A review card mounts it exactly as it
+// is. The full view on the artifact page is not this package's to draw: the host
+// resolves the markdown display for the post's type, and the Code and Preview
+// tabs are that display's header.
 //
 // A TEXT VIEW RENDERS TEXT. Nothing here draws a picture, whatever the stored
 // content names: a picture is its own artifact with its own display.

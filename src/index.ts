@@ -48,22 +48,22 @@ export const blogPostArtifactManifest: SemanticArtifactManifest = {
     },
   ],
 
-  // THE DISPLAYS THIS EXTENSION SHIPS, declared for its OWN type and published
+  // THE DISPLAY THIS EXTENSION SHIPS, declared for its OWN type and published
   // through this package's own `exports` at the key the host's manifest
-  // generator derives from each entry. Mirrors the `cinatra` block in
+  // generator derives from the entry. Mirrors the `cinatra` block in
   // package.json, which is the manifest of record; the manifest test keeps the
   // two in agreement.
+  //
+  // NO RENDERER FOR THE `detail` SLOT. The post's full view is not this
+  // package's to draw: a text renderer registered here would win the artifact
+  // page for this extension's own type and shadow the markdown display every
+  // markdown work is drawn by. The slot is left unclaimed — the way the document
+  // kinds delivered before this one leave it — so the host resolves that display
+  // for the post's type.
   ui: {
     "abiVersion": 1,
     "sdkAbiRange": "^2.5.0",
     "renderers": {
-      "detail": {
-        "entry": "./src/renderers/detail.tsx",
-        "propsApiVersion": 1,
-        "representations": [
-          "text/markdown"
-        ]
-      },
       "preview": {
         "entry": "./src/renderers/preview.tsx",
         "propsApiVersion": 1,

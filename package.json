@@ -15,7 +15,6 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./src/renderers/detail": "./src/renderers/detail.tsx",
     "./src/renderers/preview": "./src/renderers/preview.tsx",
     "./src/suggestion-projector": "./src/suggestion-projector.ts"
   },
@@ -73,13 +72,6 @@
         "abiVersion": 1,
         "sdkAbiRange": "^2.5.0",
         "renderers": {
-          "detail": {
-            "entry": "./src/renderers/detail.tsx",
-            "propsApiVersion": 1,
-            "representations": [
-              "text/markdown"
-            ]
-          },
           "preview": {
             "entry": "./src/renderers/preview.tsx",
             "propsApiVersion": 1,

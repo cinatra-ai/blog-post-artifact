@@ -15,7 +15,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { cleanup, render } from "@testing-library/react";
 
-import Detail from "../src/renderers/detail";
 import Preview from "../src/renderers/preview";
 import { props, textContent } from "./props-fixture";
 import { REAL_SANITIZER } from "./sanitizer-mode";
@@ -46,10 +45,7 @@ describe("the post's display shows the post and draws no picture", () => {
     resetMarkdownSanitizerStub();
   });
 
-  for (const [slot, Entry] of [
-    ["detail", Detail],
-    ["preview", Preview],
-  ] as const) {
+  for (const [slot, Entry] of [["preview", Preview]] as const) {
     it(`${slot}: a post whose data names a featured image renders NO image node`, () => {
       // The sanitizer double returns a marker, so whatever image node appeared
       // could only have been put there by THIS package.
@@ -86,7 +82,7 @@ describe("the post's display shows the post and draws no picture", () => {
     // so this asserts what this package owns: it adds no picture of its own
     // beside the document it was given.
     sanitizerStubState.html = '<p data-marker="only-what-the-sanitizer-returned">body</p>';
-    const { container } = render(<Detail {...props(textContent(POST_NAMING_ITS_FEATURED_IMAGE))} />);
+    const { container } = render(<Preview {...props(textContent(POST_NAMING_ITS_FEATURED_IMAGE))} />);
     const body = container.querySelector("[data-markdown-body]");
     expect(body).not.toBeNull();
     expect(body?.innerHTML).toBe('<p data-marker="only-what-the-sanitizer-returned">body</p>');

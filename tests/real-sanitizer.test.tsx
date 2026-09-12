@@ -17,7 +17,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, render } from "@testing-library/react";
 
-import Detail from "../src/renderers/detail";
 import Preview from "../src/renderers/preview";
 import { islandProps, props, textContent } from "./props-fixture";
 import { REAL_SANITIZER } from "./sanitizer-mode";
@@ -47,7 +46,6 @@ afterEach(cleanup);
 
 describe.skipIf(!REAL_SANITIZER)("the display draws through the REAL shared sanitizer", () => {
   for (const [name, Entry, build] of [
-    ["the artifact page", Detail, props],
     ["the review card", Preview, props],
     ["inside a third-party application", Preview, islandProps],
   ] as const) {
@@ -87,8 +85,8 @@ describe.skipIf(!REAL_SANITIZER)("the display draws through the REAL shared sani
     });
 
     it(`on ${name} the surface keeps the only top-level heading`, () => {
-      // Both slots demote: the artifact page and the review card own their own
-      // first-level heading, so a document's own must not become a second one.
+      // The preview demotes: the review card owns its own first-level
+      // heading, so a document's own must not become a second one.
       const { container } = render(<Entry {...build(textContent(BODY))} />);
       expect(container.querySelector("[data-markdown-body] h1")).toBeNull();
       expect(container.querySelector("[data-markdown-body] h2")).not.toBeNull();
@@ -96,7 +94,7 @@ describe.skipIf(!REAL_SANITIZER)("the display draws through the REAL shared sani
   }
 
   it("an empty document floors instead of drawing an empty panel", () => {
-    const { container } = render(<Detail {...props(textContent("   \n   "))} />);
+    const { container } = render(<Preview {...props(textContent("   \n   "))} />);
     expect(container.querySelector("[data-floor='empty-document']")).not.toBeNull();
   });
 });

@@ -3,12 +3,12 @@
 // The `preview` slot is where a surface shows a piece of work beside other
 // things: the review card, a representation viewer, a list of work — and, inside
 // a third-party application, the review card drawn in the island. It draws the
-// SAME sanitized rendering the full view draws — one artifact, one appearance —
-// in a clipped container, so a long draft takes a card's worth of room instead
-// of the whole surface.
+// sanitized rendering in a clipped container, so a long draft takes a card's
+// worth of room instead of the whole surface. The full view is not this
+// package's to draw.
 //
 // v1 renderer: no host ports, no fetching, read-only, no Regenerate, and the
-// same named floors as the full view.
+// named floors this package pins in its own tests.
 
 import type { ReactElement } from "react";
 

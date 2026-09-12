@@ -53,10 +53,23 @@ describe("the display is declared for this extension's own type", () => {
     expect(ui.sdkAbiRange).toBe("^2.5.0");
   });
 
-  it("ships BOTH the detail and the preview display, each naming its own entry", () => {
+  it("registers NO text renderer of its own for the detail slot", () => {
+    // THE POST DRAWS THROUGH THE MARKDOWN DISPLAY. A text renderer registered
+    // here for the `detail` slot wins the artifact page for this extension's own
+    // type and shadows the display every markdown work is drawn by. The document
+    // kinds delivered before this one register none, and neither does this
+    // package: with the slot unclaimed the host resolves the markdown display
+    // for the post's type.
     const renderers = pkg.cinatra.artifact.ui.renderers;
-    expect(Object.keys(renderers).sort()).toEqual(["detail", "preview"]);
-    expect(renderers.detail.entry).toBe("./src/renderers/detail.tsx");
+    const typedRenderers = (blogPostArtifactManifest.ui?.renderers ?? {}) as Record<string, unknown>;
+    expect(Object.keys(renderers)).not.toContain("detail");
+    expect(Object.keys(typedRenderers)).not.toContain("detail");
+    expect(Object.keys(pkg.exports)).not.toContain("./src/renderers/detail");
+  });
+
+  it("keeps the preview display of its own, and only that, naming its own entry", () => {
+    const renderers = pkg.cinatra.artifact.ui.renderers;
+    expect(Object.keys(renderers).sort()).toEqual(["preview"]);
     expect(renderers.preview.entry).toBe("./src/renderers/preview.tsx");
   });
 

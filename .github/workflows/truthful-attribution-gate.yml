@@ -1,10 +1,14 @@
 name: truthful-attribution-gate
 # Thin caller for the org-reusable truthful-attribution-gate (cinatra-ai/ci).
 # WARN mode (rollout soak): findings are annotated, the check is ALWAYS green —
-# it never fails a PR. No .github/gate-suite.json is committed (WARN scope
-# exercises presence + the human arm; the gate-suite arm is not exercised
-# without a suite). The engine is pinned by SHA below; the trailing version
-# marker on the reusable-workflow call follows this repo's thin-caller
+# it never fails a PR. This repo commits .github/gate-suite.json, so the
+# gate-suite arm IS exercised: the engine reads that suite at its default path,
+# classifies a change against the central high-risk defaults EXTENDED by the
+# suite's highRiskPaths (a set that drops a central default fails closed),
+# applies the version-bump/audit-coupling rule whenever a PR changes the suite,
+# and verifies any Gate-suite + Accountable record against it — WARN still
+# annotates rather than failing. The engine is pinned by SHA below; the trailing
+# version marker on the reusable-workflow call follows this repo's thin-caller
 # convention, while the SHA and with.ref value are the authoritative immutable
 # pin (the actions-pinned-gate format-checks the marker but does not bind it to
 # the pinned SHA).

@@ -19,6 +19,15 @@ import {
   ARTIFACT_CONTENT_CLASSES,
 } from "../src/artifact-content-channel";
 import {
+  ARTIFACT_EDIT_CHANNEL_VERSION,
+  ARTIFACT_EDIT_FAILURE_REASONS,
+  ARTIFACT_EDIT_IDLE_PAUSE_MS,
+  ARTIFACT_EDIT_REFUSALS,
+  ARTIFACT_EDIT_REFUSED_REASONS,
+  ARTIFACT_EDIT_TEXT_CAP_BYTES,
+  isArtifactEditGranted,
+} from "../src/artifact-edit-channel";
+import {
   ARTIFACT_OWNER_LEVELS,
   ARTIFACT_RENDERER_PROPS_API_VERSION,
   ARTIFACT_VISIBILITIES,
@@ -75,9 +84,61 @@ describe("the renderer-props contract copy", () => {
         representationRevisionId: null,
         reason: "absent",
       },
+      edit: { kind: "read-only", channelVersion: 1, reason: "read-only-surface" },
     };
     expect(snapshot.artifact.ownerLevel).toBe("user");
     expect(snapshot.identity.kind).toBe("extension");
+  });
+});
+
+describe("the edit-channel contract copy", () => {
+  it("carries the channel version the host mints a capability at", () => {
+    expect(ARTIFACT_EDIT_CHANNEL_VERSION).toBe(1);
+  });
+
+  it("carries the idle pause and the text cap the contract stamps", () => {
+    expect(ARTIFACT_EDIT_IDLE_PAUSE_MS).toBe(900);
+    expect(ARTIFACT_EDIT_TEXT_CAP_BYTES).toBe(256 * 1024);
+  });
+
+  it("spells every named refusal exactly as the contract does", () => {
+    expect([...ARTIFACT_EDIT_REFUSALS]).toEqual([
+      "no-write-rights",
+      "read-only-surface",
+      "unsupported-form",
+      "no-representation",
+      "content-truncated",
+    ]);
+    expect([...ARTIFACT_EDIT_REFUSED_REASONS]).toEqual([
+      "no-write-rights",
+      "over-cap",
+      "unsupported-form",
+      "no-representation",
+      "unknown-base",
+      "malformed",
+    ]);
+    expect([...ARTIFACT_EDIT_FAILURE_REASONS]).toEqual(["transport", "malformed-answer", "server"]);
+  });
+
+  it("grants an edit ONLY on a capability that says so, at this channel version", () => {
+    // The ONE test a display makes: it never infers permission from anything
+    // else on the snapshot, and it never reads a missing capability as one.
+    const grant = {
+      kind: "editable",
+      channelVersion: 1,
+      artifactId: "art_1",
+      baseRevisionId: "rev_1",
+      saveUrl: "/api/artifacts/art_1/edit",
+      idlePauseMs: ARTIFACT_EDIT_IDLE_PAUSE_MS,
+      capBytes: ARTIFACT_EDIT_TEXT_CAP_BYTES,
+    } as const;
+    expect(isArtifactEditGranted(grant)).toBe(true);
+    expect(isArtifactEditGranted(null)).toBe(false);
+    expect(isArtifactEditGranted(undefined)).toBe(false);
+    expect(isArtifactEditGranted({ kind: "read-only", channelVersion: 1, reason: "read-only-surface" })).toBe(false);
+    expect(isArtifactEditGranted({ ...grant, channelVersion: 2 })).toBe(false);
+    expect(isArtifactEditGranted({ ...grant, saveUrl: "" })).toBe(false);
+    expect(isArtifactEditGranted({ ...grant, baseRevisionId: "" })).toBe(false);
   });
 });
 

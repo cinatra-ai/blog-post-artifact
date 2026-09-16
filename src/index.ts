@@ -54,16 +54,23 @@ export const blogPostArtifactManifest: SemanticArtifactManifest = {
   // package.json, which is the manifest of record; the manifest test keeps the
   // two in agreement.
   //
-  // NO RENDERER FOR THE `detail` SLOT. The post's full view is not this
-  // package's to draw: a text renderer registered here would win the artifact
-  // page for this extension's own type and shadow the markdown display every
-  // markdown work is drawn by. The slot is left unclaimed — the way the document
-  // kinds delivered before this one leave it — so the host resolves that display
-  // for the post's type.
+  // THE `detail` SLOT IS THIS PACKAGE'S. The drawing gives this display the
+  // Code and Preview tabs, the in-place edit and the saving indicator, and says
+  // a display's chrome travels with it wherever the artifact is read — so the
+  // post's full view is drawn by the display registered here for this
+  // extension's own type, and the review card and the widget mount that same
+  // display with the read-only capability their surface minted.
   ui: {
     "abiVersion": 1,
     "sdkAbiRange": "^2.5.0",
     "renderers": {
+      "detail": {
+        "entry": "./src/renderers/detail.tsx",
+        "propsApiVersion": 1,
+        "representations": [
+          "text/markdown"
+        ]
+      },
       "preview": {
         "entry": "./src/renderers/preview.tsx",
         "propsApiVersion": 1,
@@ -79,6 +86,15 @@ export {
   type ArtifactRendererProps,
   ARTIFACT_RENDERER_PROPS_API_VERSION,
 } from "./artifact-renderer-props";
+
+export {
+  type ArtifactEditCapability,
+  type ArtifactEditRefusal,
+  type ArtifactEditOutcome,
+  ARTIFACT_EDIT_CHANNEL_VERSION,
+  ARTIFACT_EDIT_IDLE_PAUSE_MS,
+  isArtifactEditGranted,
+} from "./artifact-edit-channel";
 
 export {
   type ArtifactContentProjection,

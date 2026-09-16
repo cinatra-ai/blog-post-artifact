@@ -1,11 +1,13 @@
-// ACCEPTANCE 1 — this extension's OWN display draws a blog post ON THE REVIEW
-// CARD AND INSIDE A THIRD-PARTY APPLICATION, at the pinned revision.
+// ACCEPTANCE 1 — this extension's OWN compact reading draws a blog post BESIDE
+// OTHER WORK AND INSIDE A THIRD-PARTY APPLICATION, at the pinned revision.
 //
-// The artifact page is NOT one of these surfaces: this package registers no
-// renderer for the `detail` slot, so the post's full view is the markdown
-// display the host resolves for its type. Two surfaces, two mounts, one
-// display: the review card mounts the `preview` entry READ-ONLY, and inside a
-// third-party application the same entry is mounted on a snapshot whose
+// THE COMPACT READING, and only that: the `preview` entry is where a surface
+// shows a post beside other things — a list of work, a representation viewer —
+// and it draws the post clipped, with no strip and nothing to edit. The post's
+// FULL view, with its Code and Preview tabs, is the `detail` entry, and that is
+// the display every reading surface mounts (`tests/detail-strip.test.tsx`).
+// Two mounts here, one display: the compact reading on a first-party surface,
+// and the same entry inside a third-party application on a snapshot whose
 // host-authorized addresses are island-scoped. Every mount asserts the PINNED
 // revision it drew, because a display that drew the right words at the wrong
 // revision is a display that lied about what is under review.
@@ -22,7 +24,7 @@ import { cleanup, render } from "@testing-library/react";
 import Preview from "../src/renderers/preview";
 import { TEXT_DISPLAY_PROPS_API_VERSION } from "../src/renderers/text-view";
 import type { ArtifactRendererProps } from "../src/artifact-renderer-props";
-import { ISLAND_BYTE_ADDRESS, islandProps, props, textContent } from "./props-fixture";
+import { ISLAND_BYTE_ADDRESS, islandProps, props, readOnlyEdit, textContent } from "./props-fixture";
 import { REAL_SANITIZER } from "./sanitizer-mode";
 import {
   resetMarkdownSanitizerStub,
@@ -45,10 +47,10 @@ const SURFACES: Array<{
   compact: boolean;
 }> = [
   {
-    name: "the review card",
+    name: "the compact reading",
     slot: "preview",
     Entry: Preview as Entry,
-    build: (c) => props(c),
+    build: (c) => props(c, { edit: readOnlyEdit("read-only-surface") }),
     compact: true,
   },
   {

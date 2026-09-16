@@ -67,6 +67,24 @@ export function withoutPictures(html: string): string {
   });
 }
 
+/**
+ * Render a post to safe html through the ONE shared sanitizer, for the tab that
+ * draws a post the person is editing — the pinned text is rendered by
+ * `resolveTextView` below, and every keystroke after it comes through here.
+ *
+ * NOTHING IS SANITIZED HERE EITHER. This is the same call the resolver makes,
+ * with the same options and the same picture removal, so the previewed post and
+ * the drawn post can never disagree about what is safe or about what a text
+ * view renders. A failure renders nothing rather than anything unsanitized.
+ */
+export function renderTextHtml(markdown: string): string {
+  try {
+    return withoutPictures(renderSanitizedMarkdown(markdown, { demoteHeadings: true }));
+  } catch {
+    return "";
+  }
+}
+
 /** Resolve what to draw. Total: it returns a view for every input. */
 export function resolveTextView(props: TextRendererInput): TextView {
   if (props === null || props === undefined || typeof props !== "object" || Array.isArray(props)) {
@@ -174,6 +192,7 @@ export function resolveTextView(props: TextRendererInput): TextView {
   return {
     kind: "document",
     html,
+    source: text,
     revisionId: contentRevisionId,
     truncated,
     byteLength,

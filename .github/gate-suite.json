@@ -1,0 +1,79 @@
+{
+  "$comment": "Named, versioned machine-verification suite for cinatra-ai/blog-post-artifact \u2014 the gate-arm half of the truthful verification-record model (the Truthful Attribution protocol \u00a74). The truthful-attribution-gate reads THIS file at the merged SHA (authoritative, no TOCTOU) when a merge record carries a Gate-suite arm: it verifies that every context in requiredContexts concluded green on the reviewed head, that each pinned context's run referenced the reusable workflow at exactly the pinned SHA, and that the effective highRiskPaths set is a SUPERSET of the central cinatra-ai/ci config/high-risk-defaults.json globs. suiteId@version is immutable per content: any change to the content below bumps version. requiredContexts mirror the org baseline-protection ruleset's required status checks for this repository, each pinned to the SHA this repository's OWN thin caller in .github/workflows/ pins \u2014 a suite pin that lags its caller fails the gate arm CLOSED. The truthful-attribution-gate entry itself is declared BY NAME \u2014 its context name, its callerPath and its caller's own trigger events \u2014 and carries NEITHER a workflow NOR a pin: the two go together or not at all, and a workflow declared without a 40-hex pin fails the gate closed. This repository's caller runs the engine in WARN mode during the rollout soak, so that context is not yet one of the ruleset's required status checks and its engine pin is not asserted here; the workflow and its pin are added in the same commit that takes the caller out of WARN mode.",
+  "suiteId": "blog-post-artifact-core",
+  "version": "2026.09.1",
+  "accountable": {
+    "name": "Sandro Groganz",
+    "email": "sandro@cinatra.ai",
+    "github": "groganz"
+  },
+  "requiredContexts": [
+    {
+      "context": "actions-pinned-gate / actions-pinned-gate",
+      "workflow": "cinatra-ai/ci/.github/workflows/actions-pinned-gate.yml",
+      "pinned": "4c903fe9ca71ad47752a2bc92b72893e5f7c9814"
+    },
+    {
+      "context": "gitignore-gate / gitignore-gate",
+      "workflow": "cinatra-ai/ci/.github/workflows/gitignore-gate.yml",
+      "pinned": "4c903fe9ca71ad47752a2bc92b72893e5f7c9814"
+    },
+    {
+      "context": "source-leak-gate / source-leak-gate",
+      "workflow": "cinatra-ai/ci/.github/workflows/source-leak-gate.yml",
+      "pinned": "00ac7b92c2ca1ca291a1824d743cbd00c4a3e48e"
+    },
+    {
+      "context": "secret-scan-gate / secret-scan-gate",
+      "workflow": "cinatra-ai/ci/.github/workflows/secret-scan-gate.yml",
+      "pinned": "a8677e50ba02fcb11929e94c70fb5ba96a8ea3ae"
+    },
+    {
+      "context": "truthful-attribution-gate / truthful-attribution-gate",
+      "callerPath": ".github/workflows/truthful-attribution-gate.yml",
+      "allowedEvents": [
+        "pull_request",
+        "push"
+      ]
+    }
+  ],
+  "highRiskPaths": [
+    "**/auth/**",
+    "**/permissions/**",
+    "**/session*",
+    "**/session/**",
+    "src/lib/auth*",
+    "src/lib/auth/**",
+    "**/webhooks/**/verify*",
+    "**/*signature*verif*",
+    "**/secrets/**",
+    "**/migrations/**",
+    "**/schema.prisma",
+    "**/schema.sql",
+    "**/*.migration.*",
+    ".github/**",
+    "**/CODEOWNERS",
+    "**/release*.sh",
+    "**/publish*.sh",
+    "scripts/release/**",
+    "scripts/publish/**",
+    "**/gate-suite.json",
+    "config/high-risk-defaults.json",
+    ".github/workflows/truthful-attribution-gate.yml",
+    "packages/sdk-extensions/**",
+    "**/extension-loader/**",
+    "**/trust-gate/**",
+    "**/signature-gate/**",
+    "**/capability-registry/**",
+    "**/transport-registry/**",
+    "docs-site/astro.config.mjs",
+    "docs-site/src/content.config.ts",
+    "docs-site/integrations-registry.json",
+    "**/integrations-registry.json",
+    "scripts/sync-docs.mjs",
+    "scripts/docs-contract-gate.mjs",
+    "scripts/lib/docs-contract-rules.mjs"
+  ],
+  "lastAuditedAt": "2026-09-16",
+  "auditEvidence": "2026-09-16 suite birth: the blog-post-artifact-core suite is committed for the first time, under the ruling that every repository the delivery loop merges into carries a committed check suite. highRiskPaths is the UNION of cinatra-ai/ci config/high-risk-defaults.json read at two refs \u2014 the repository's callers' engine pin range head and 416a75707fdcfeb768b41c3a54f944078d1ab8fc \u2014 which are byte-identical in their highRiskGlobs array (35 globs), so the union is exactly that list and the superset check passes by construction; this suite EXTENDS nothing beyond the central defaults, because this repository ships no surface outside them that the classes name. requiredContexts are the four contexts the organisation's baseline-protection ruleset requires on this repository's main (actions-pinned-gate, gitignore-gate, source-leak-gate, secret-scan-gate), each pinned to the SHA this repository's own thin caller pins in .github/workflows/, read from those files at this commit; plus the truthful-attribution-gate context declared by name alone, with its callerPath and its caller's own two triggers as allowedEvents and with neither a workflow nor a pin, while that caller runs in WARN mode. The suite file itself matches the central globs '**/gate-suite.json' and '.github/**', so its own birth and every later edit are high-risk by construction and take a tier=maintainer human Reviewed-by rather than the gate arm."
+}

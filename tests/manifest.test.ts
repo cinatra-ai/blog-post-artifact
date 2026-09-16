@@ -53,23 +53,24 @@ describe("the display is declared for this extension's own type", () => {
     expect(ui.sdkAbiRange).toBe("^2.5.0");
   });
 
-  it("registers NO text renderer of its own for the detail slot", () => {
-    // THE POST DRAWS THROUGH THE MARKDOWN DISPLAY. A text renderer registered
-    // here for the `detail` slot wins the artifact page for this extension's own
-    // type and shadows the display every markdown work is drawn by. The document
-    // kinds delivered before this one register none, and neither does this
-    // package: with the slot unclaimed the host resolves the markdown display
-    // for the post's type.
+  it("registers its OWN display for the detail slot, and publishes it", () => {
+    // THE POST DRAWS THROUGH THIS PACKAGE'S OWN DISPLAY. The drawing gives this
+    // display the Code and Preview tabs, the in-place edit and the saving
+    // indicator, and says a display's chrome travels with it wherever the
+    // artifact is read — so the full view on the artifact's own page is
+    // registered here, for this extension's own type, and the review card and
+    // the widget mount that same display.
     const renderers = pkg.cinatra.artifact.ui.renderers;
     const typedRenderers = (blogPostArtifactManifest.ui?.renderers ?? {}) as Record<string, unknown>;
-    expect(Object.keys(renderers)).not.toContain("detail");
-    expect(Object.keys(typedRenderers)).not.toContain("detail");
-    expect(Object.keys(pkg.exports)).not.toContain("./src/renderers/detail");
+    expect(Object.keys(renderers)).toContain("detail");
+    expect(Object.keys(typedRenderers)).toContain("detail");
+    expect(Object.keys(pkg.exports)).toContain("./src/renderers/detail");
   });
 
-  it("keeps the preview display of its own, and only that, naming its own entry", () => {
+  it("keeps the two displays of its own, and only those, naming their own entries", () => {
     const renderers = pkg.cinatra.artifact.ui.renderers;
-    expect(Object.keys(renderers).sort()).toEqual(["preview"]);
+    expect(Object.keys(renderers).sort()).toEqual(["detail", "preview"]);
+    expect(renderers.detail.entry).toBe("./src/renderers/detail.tsx");
     expect(renderers.preview.entry).toBe("./src/renderers/preview.tsx");
   });
 

@@ -23,6 +23,7 @@
 // `./artifact-content-channel`, the local copy of that leaf beside this one.
 
 import type { ArtifactContentProjection } from "./artifact-content-channel";
+import type { ArtifactEditCapability } from "./artifact-edit-channel";
 
 export const ARTIFACT_RENDERER_PROPS_API_VERSION = 1;
 
@@ -86,4 +87,18 @@ export interface ArtifactRendererProps {
    * application, where reaching for bytes from the browser paints nothing.
    */
   content: ArtifactContentProjection;
+  /**
+   * THE EDIT CAPABILITY — either a host-minted grant naming the base revision
+   * and where a change set goes, or a NAMED refusal. Every surface that mounts
+   * a display says which: the artifact page mints a grant for a reader with
+   * write rights, and every other surface — the review card above all — mints a
+   * refusal. That is what makes "the review card shows the same display
+   * read-only" a property of the props rather than of a display remembering to
+   * behave.
+   *
+   * A display switches on `edit.kind`, and never infers permission from
+   * anything else on this snapshot. See `./artifact-edit-channel`, the local
+   * copy of that leaf beside this one.
+   */
+  edit: ArtifactEditCapability;
 }

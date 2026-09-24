@@ -1,15 +1,14 @@
 // @vitest-environment node
-// ACCEPTANCE 1, the packaging half: the display is REGISTERED FOR THIS
-// EXTENSION'S OWN TYPE, published through this package's OWN `exports` at the
-// key the host's manifest generator derives, and declared at the props version
-// the display actually accepts a snapshot at.
+// The packaging of this extension: it registers NO display of its own — a blog
+// post is drawn by the display of its content type — while it keeps its own
+// accepted form, its own type, its optional SDK peer and an exports map that
+// names only the package root and the suggestion projector.
 
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
-import { TEXT_DISPLAY_PROPS_API_VERSION } from "../src/renderers/text-view";
 import { blogPostArtifactManifest } from "../src/index";
 
 const pkg = JSON.parse(
@@ -25,7 +24,7 @@ const pkg = JSON.parse(
     kind: string;
     artifact: {
       accepts: { file: { mimeTypes: string[] } };
-      ui: {
+      ui?: {
         abiVersion: number;
         sdkAbiRange: string;
         renderers: Record<string, { entry: string; propsApiVersion: number; representations?: string[] }>;
@@ -37,72 +36,24 @@ const pkg = JSON.parse(
 
 const MIMES = ["text/markdown"];
 const OWN_TYPE = "@cinatra-ai/blog-post-artifact:post";
-const ARTIFACT_UI_RENDERER_ALLOWED_KEYS = new Set(["entry", "propsApiVersion", "representations"]);
-
-/** The key the host's manifest generator derives from a renderer entry: the
- * entry path minus its source extension. A display is published only at THIS
- * key — the generator refuses to generate when nothing resolves it. */
-function generatorExportsKeyForEntry(entry: string): string {
-  return `./${entry.replace(/^\.\//, "").replace(/\.(ts|tsx)$/, "")}`;
-}
 
 describe("the display is declared for this extension's own type", () => {
-  it("declares a strict v1 ui block bound to the generated host SDK ABI range", () => {
-    const ui = pkg.cinatra.artifact.ui;
-    expect(ui.abiVersion).toBe(1);
-    expect(ui.sdkAbiRange).toBe("^2.5.0");
+  // A blog post is drawn by the display of its content type — markdown by the
+  // Markdown extension's display, in the preview as on the full page — so this
+  // package declares no `ui` block, its typed manifest carries no `ui` member,
+  // and its exports publish no display subpath: only the package root and the
+  // suggestion projector.
+  it("registers NO renderer of its own for any slot", () => {
+    expect(pkg.cinatra.artifact.ui).toBeUndefined();
+    expect(blogPostArtifactManifest.ui).toBeUndefined();
+    expect(Object.keys(pkg.exports).sort()).toEqual([".", "./src/suggestion-projector"]);
   });
 
-  it("registers NO text renderer of its own for the detail slot", () => {
-    // THE POST DRAWS THROUGH THE MARKDOWN DISPLAY. A text renderer registered
-    // here for the `detail` slot wins the artifact page for this extension's own
-    // type and shadows the display every markdown work is drawn by. The document
-    // kinds delivered before this one register none, and neither does this
-    // package: with the slot unclaimed the host resolves the markdown display
-    // for the post's type.
-    const renderers = pkg.cinatra.artifact.ui.renderers;
-    const typedRenderers = (blogPostArtifactManifest.ui?.renderers ?? {}) as Record<string, unknown>;
-    expect(Object.keys(renderers)).not.toContain("detail");
-    expect(Object.keys(typedRenderers)).not.toContain("detail");
-    expect(Object.keys(pkg.exports)).not.toContain("./src/renderers/detail");
-  });
-
-  it("keeps the preview display of its own, and only that, naming its own entry", () => {
-    const renderers = pkg.cinatra.artifact.ui.renderers;
-    expect(Object.keys(renderers).sort()).toEqual(["preview"]);
-    expect(renderers.preview.entry).toBe("./src/renderers/preview.tsx");
-  });
-
-  it("draws only the representation forms this extension itself accepts — no wildcard, no foreign form", () => {
-    // "Registered for its own type with no content-form registration": the
-    // slots name this extension's OWN accepted forms and claim no form beyond
-    // them, so this display never wins for another extension's artifact.
+  it("pins the form this extension accepts and its own type", () => {
+    // The extension still accepts exactly its own markdown form and still claims
+    // its own object type; only the display registration is gone.
     expect(pkg.cinatra.artifact.accepts.file.mimeTypes).toEqual(MIMES);
-    for (const renderer of Object.values(pkg.cinatra.artifact.ui.renderers)) {
-      expect(renderer.representations).toEqual(MIMES);
-      for (const form of renderer.representations ?? []) {
-        expect(form.includes("*")).toBe(false);
-        expect(pkg.cinatra.artifact.accepts.file.mimeTypes).toContain(form);
-      }
-    }
     expect(pkg.cinatra.artifact.objectTypes.map((c) => c.type)).toContain(OWN_TYPE);
-  });
-
-  it("declares the props version the display actually accepts a snapshot at", () => {
-    const renderers = Object.values(pkg.cinatra.artifact.ui.renderers);
-    expect(renderers.length).toBeGreaterThan(0);
-    for (const renderer of renderers) {
-      expect(renderer.propsApiVersion).toBe(TEXT_DISPLAY_PROPS_API_VERSION);
-      for (const k of Object.keys(renderer)) {
-        expect(ARTIFACT_UI_RENDERER_ALLOWED_KEYS.has(k)).toBe(true);
-      }
-    }
-  });
-
-  it("requests NO host ports — a v1 display renders from the snapshot alone", () => {
-    for (const renderer of Object.values(pkg.cinatra.artifact.ui.renderers)) {
-      expect(Object.keys(renderer).sort()).toEqual(["entry", "propsApiVersion", "representations"]);
-    }
   });
 
   it("takes the sanitizer from the SDK as the OPTIONAL host-provided peer it is", () => {
@@ -123,14 +74,6 @@ describe("the display is published by the package itself", () => {
     for (const key of Object.keys(pkg.exports)) {
       expect(key.startsWith(".")).toBe(true);
       expect(key.includes("*")).toBe(false);
-    }
-  });
-
-  it("publishes EVERY declared display at the generator's key", () => {
-    for (const renderer of Object.values(pkg.cinatra.artifact.ui.renderers)) {
-      const key = generatorExportsKeyForEntry(renderer.entry);
-      expect(Object.keys(pkg.exports)).toContain(key);
-      expect(pkg.exports[key]).toBe(renderer.entry);
     }
   });
 

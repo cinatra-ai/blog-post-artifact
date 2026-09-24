@@ -48,31 +48,10 @@ export const blogPostArtifactManifest: SemanticArtifactManifest = {
     },
   ],
 
-  // THE DISPLAY THIS EXTENSION SHIPS, declared for its OWN type and published
-  // through this package's own `exports` at the key the host's manifest
-  // generator derives from the entry. Mirrors the `cinatra` block in
-  // package.json, which is the manifest of record; the manifest test keeps the
-  // two in agreement.
-  //
-  // NO RENDERER FOR THE `detail` SLOT. The post's full view is not this
-  // package's to draw: a text renderer registered here would win the artifact
-  // page for this extension's own type and shadow the markdown display every
-  // markdown work is drawn by. The slot is left unclaimed — the way the document
-  // kinds delivered before this one leave it — so the host resolves that display
-  // for the post's type.
-  ui: {
-    "abiVersion": 1,
-    "sdkAbiRange": "^2.5.0",
-    "renderers": {
-      "preview": {
-        "entry": "./src/renderers/preview.tsx",
-        "propsApiVersion": 1,
-        "representations": [
-          "text/markdown"
-        ]
-      }
-    }
-  },
+  // NO DISPLAY OF ITS OWN: this extension registers no renderer for any slot.
+  // A blog post is drawn by the display of its content type -- markdown by the
+  // Markdown extension's display. The modules under src/renderers stay in the
+  // tree, unregistered and unexported.
 };
 
 export {
@@ -90,6 +69,5 @@ export {
 // TYPES ONLY, AND FROM THE SANITIZER-FREE CONTRACT MODULE. The view leaf reaches
 // the host-provided sanitizer, and a type re-export from THAT module would make
 // a compiler follow it there. This root module must stay resolvable with nothing
-// installed. The displays are imported at their own published subpaths, and so
-// is the suggestion projector.
+// installed. The suggestion projector is imported at its own published subpath.
 export type { TextView, TextFloorReason } from "./renderers/text-view-contract";
